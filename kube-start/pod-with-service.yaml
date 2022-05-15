@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fe-gate
+spec:
+  selector:
+    run: nginx
+  type: NodePort
+  ports:
+  - name: foo # Actually, no port is needed.
+    port: 80
+    targetPort: 80
