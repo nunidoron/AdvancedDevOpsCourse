@@ -1,0 +1,14 @@
+kubectl apply -f two-containers-pod.yaml
+kubectl exec -it two-containers -c debian-container bash
+apt update && apt install -y net-tools procps curl dnsutils # install networking tools
+ps -ef # list all processes
+curl localhost
+
+
+kubectl apply -f pod-with-service.yaml
+kubectl exec -it debian bash
+apt update && apt install -y net-tools procps curl dnsutils
+dig  fe-gate
+curl fe-gate
+
+kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/bash
