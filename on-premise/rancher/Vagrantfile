@@ -1,0 +1,40 @@
+$instance_name_prefix = "kub"
+$vm_cpus = 3
+$num_instances = 2
+$subnet = "10.0.20"
+$rancher_vm_memory = 1024
+$node_vm_memory = 4608
+$vm_gui = false
+$provision_rancher_script = "https://raw.githubusercontent.com/avielb/k8s-experts/master/on-premise/rancher/provision_rancher.sh"
+$provision_docker_script = "https://raw.githubusercontent.com/avielb/k8s-experts/master/on-premise/rancher/provision_docker.sh"
+
+
+Vagrant.configure("2") do |config|
+    config.vm.provider "virtualbox" do |v|
+      v.gui = true
+    end
+    config.vm.box = "bento/centos-7.6"
+    (1..$num_instances).each do |i|
+        config.vm.define vm_name = "%s-%01d" % [$instance_name_prefix, i] do |node|
+            node.vm.hostname = vm_name
+            node.vm.provider :virtualbox do |vb|
+              if i == 1
+                vb.memory = $rancher_vm_memory
+              else
+                vb.memory = $node_vm_memory
+              end
+              vb.cpus = $vm_cpus
+              vb.gui = $vm_gui
+              vb.linked_clone = true
+              vb.customize ["modifyvm", :id, "--vram", "8"]
+            end
+            ip = "#{$subnet}.#{i+100}"
+            node.vm.network :private_network, ip: ip
+            if i == 1
+                node.vm.provision "shell", path: $provision_rancher_script
+            else
+                node.vm.provision "shell", path: $provision_docker_script
+            end
+        end
+    end
+end

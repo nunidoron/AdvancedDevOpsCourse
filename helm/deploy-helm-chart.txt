@@ -1,0 +1,5 @@
+helm install stable/wordpress myblog -f values.yaml # install a specific helm chart from the stable repository
+kubectl get all
+helm list
+# wait for few minutes for the deployment to complete
+kubectl port-forward svc/myblog-wordpress 8080:80

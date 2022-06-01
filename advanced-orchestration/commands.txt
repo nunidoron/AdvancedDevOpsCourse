@@ -1,0 +1,13 @@
+cd k8s-experts/advanced-orchestration
+cat statefulset.yaml
+kubectl apply -f statefulset.yaml
+kubectl get all
+kubectl scale statefulset web --replicas 10
+kubectl get all
+
+cd k8s-experts/advanced-orchestration
+cat daemonset.yaml
+kubectl apply -f daemonset.yaml
+kubectl get all
+kubectl logs -l name=cleanup
+
