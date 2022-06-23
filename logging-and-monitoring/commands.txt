@@ -20,4 +20,5 @@ kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/
 
 Jenkins Installation
 ---
-helm install jenkins stable/jenkins --set master.serviceType=NodePort
+helm repo add jenkins https://charts.jenkins.io
+helm install jenkins jenkins/jenkins --set controller.serviceType=NodePort
