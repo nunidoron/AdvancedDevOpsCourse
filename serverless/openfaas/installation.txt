@@ -1,0 +1,27 @@
+# Start Kubernetes
+minikube start
+# Clone faas-netes
+git clone https://github.com/openfaas/faas-netes
+kubectl apply -f https://raw.githubusercontent.com/openfaas/faas-netes/master/namespaces.yml
+# FaaS auth
+kubectl -n openfaas create secret generic basic-auth \
+--from-literal=basic-auth-user=admin \
+--from-literal=basic-auth-password="123456"
+
+# Deploy OpenFaaS
+cd faas-netes
+kubectl apply -f ./yaml
+kubectl port-forward svc/gateway -n openfaas 8080:8080 &
+export OPENFAAS_URL=http://127.0.0.1:8080
+
+echo -n 123456 | faas-cli login --password-stdin
+
+# Install faas-cli
+Go to: https://github.com/openfaas/faas-cli/releases
+download the app according to your operating system (Windows, OSX or Linux)
+Windows users, move it under: C:\windows\System32
+Linux and OSX, move it under /usr/local/bin
+
+# For more information visit here:
+# https://docs.openfaas.com/deployment/kubernetes
+#
