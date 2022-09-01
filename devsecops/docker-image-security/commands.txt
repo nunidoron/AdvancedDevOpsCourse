@@ -1,0 +1,4 @@
+docker build -t avielb/python-project .
+docker run avielb/python-project:latest
+
+# change jenkinsfile to use shared libraries

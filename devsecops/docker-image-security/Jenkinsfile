@@ -1,0 +1,35 @@
+def label = "docker-jenkins-${UUID.randomUUID().toString()}"
+podTemplate(label: label,
+        containers: [
+                containerTemplate(name: 'jnlp', image: 'jenkins/jnlp-slave:alpine'),
+                containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
+                containerTemplate(name: 'snyk', image: 'snyk/snyk-cli:1.320.2-docker', command: 'cat', ttyEnabled: true),
+                containerTemplate(name: 'hadolint', image: 'hadolint/hadolint:latest-debian', command: 'cat', ttyEnabled: true),
+
+        ],
+        volumes: [
+                hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+        ],
+) {
+    node(label) {
+        stage('Checkout Repo') {
+            git "https://github.com/avielb/python-project.git"
+        }
+        stage('Lint Image') {
+            container('hadolint') {
+               //sh "hadolint Dockerfile.Bad"
+               sh "hadolint Dockerfile"
+            }
+        }
+        stage("Build Image"){
+           container("docker"){
+                sh "docker build -t avielb/python-project:latest ."
+           }
+        }
+        stage("Scan Image"){
+            container("snyk"){
+                sh "SNYK_TOKEN=5848a51e-707f-46dc-b6e0-06e379fb38e6 snyk test --docker avielb/python-project:latest"
+            }
+        }
+    }
+}
